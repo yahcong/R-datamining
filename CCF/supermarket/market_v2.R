@@ -22,9 +22,11 @@ ID_pred = function(id,dt){
   dt_series = zoo(x = dt[,3],order.by = dt$sale_date)
   
   train = ts(dt_series,frequency=7,start=c(1,1))
-  fit<-auto.arima(train)
-  
+  #fit<-auto.arima(train)
+  fit <- HoltWinters(x = train, gamma = FALSE, l.start = 300, b.start = 200)
   x = forecast(fit,h=30)$mean
+  #x <- forecast.HoltWinters(fit, h=30)  #预测未来30天的数据走势
+  
   predict = round(as.data.frame(x))
   predict$sale_date = pred_time
   predict$id = id
@@ -69,3 +71,29 @@ result = result[,c("id","sale_date","x")]
 names(result) = c("编码","日期","销量")
 #result$销量[result$销量<0]=0
 write.csv(result,"output/submission.csv",row.names = F)
+
+#ctrl+shift+c
+
+ # dt = count_12
+ # id = 10
+ # dt = dt[dt$id==id,]
+ # dt = merge(date,dt,by = "sale_date",all.x = T)
+ # dt$id[is.na(dt$id)] = id
+ # dt$count[is.na(dt$count)] = ifelse(is.na(mean(dt$count,na.rm = T)),0,mean(dt$count,na.rm = T))
+ # dt_series = zoo(x = dt[,3],order.by = dt$sale_date)
+ # 
+ # train = ts(dt_series,frequency=7,start=c(1,1))
+ # #fit<-auto.arima(train)
+ # #x = forecast(fit,h=30)$mean
+ # plot.ts(train)
+ # train_HoltWinters <- HoltWinters(x = train, gamma = FALSE, l.start = 300, b.start = 200)
+ # plot(train_HoltWinters)
+ # 
+ # fit <- HoltWinters(x = train, gamma = FALSE, l.start = 300, b.start = 200)
+ # x <- forecast.HoltWinters(fit, h=30)  #预测未来30天的数据走势
+ # 
+ # predict = round(as.data.frame(x))
+ # predict$sale_date = pred_time
+ # predict$id = id
+ # predict$x = as.numeric(predict$x)
+
